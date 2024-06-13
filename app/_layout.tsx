@@ -1,37 +1,37 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import React from "react";
+import { Stack } from "expo-router";
+import { useFonts } from "expo-font";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { SQLiteProvider } from "expo-sqlite/next";
+import { migrateDbIfNeeded } from "@/utils/db";
+import { StatusBar } from "expo-status-bar";
+import { COLORS } from "@/constants/theme";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const RootLayout = () => {
+	const [fontsLoaded] = useFonts({
+		IcoMoon: require("@/assets/icomoon/fonts/icomoon.ttf"),
+	});
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+	if (!fontsLoaded) {
+		return null;
+	}
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+	return (
+		<SQLiteProvider databaseName="task.db" onInit={migrateDbIfNeeded}>
+			<StatusBar style="dark" />
+			<SafeAreaView style={{ flex: 1, backgroundColor: COLORS.dark }}>
+				<Stack>
+					<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+					<Stack.Screen
+						name="new-task"
+						options={{ headerShown: false, presentation: "modal" }}
+					/>
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+					{/* <Stack.Screen name="+not-found" /> */}
+				</Stack>
+			</SafeAreaView>
+		</SQLiteProvider>
+	);
+};
 
-  if (!loaded) {
-    return null;
-  }
-
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
-  );
-}
+export default RootLayout;
