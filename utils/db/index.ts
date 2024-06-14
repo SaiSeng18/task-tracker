@@ -76,8 +76,11 @@ export const getTasks = async (db: SQLiteDatabase): Promise<Task[]> => {
 			LEFT JOIN tags ON task_tags.tag_id = tags.id
 			GROUP BY t.id;
 		`);
+	const sortedTasks = tasks.sort(
+		(a, b) => (a.completed ? 1 : 0) - (b.completed ? 1 : 0)
+	);
 
-	return tasks;
+	return sortedTasks;
 };
 export const getTasksByCompletion = async (
 	db: SQLiteDatabase,
