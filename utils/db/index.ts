@@ -94,3 +94,60 @@ export const getTasksByCompletion = async (
 
 	return tasks;
 };
+
+export const addTask = async (
+	db: SQLiteDatabase,
+	title: string,
+	description: string,
+	completed: boolean,
+	tags: string[]
+): Promise<void> => {
+	try {
+		// Insert task
+		const taskResult = await db.runAsync(
+			`INSERT INTO tasks (title, description, completed) VALUES (?, ?, ?)`,
+			[title, description, completed ? 1 : 0]
+		);
+
+		const taskId = taskResult.lastInsertRowId;
+
+		for (const tag of tags) {
+			// Insert tag if not exists
+			const tagResult = await db.runAsync(
+				`INSERT OR IGNORE INTO tags (name) VALUES (?)`,
+				[tag]
+			);
+
+			// Get tag id
+			const tagIdResult = await db.getFirstAsync<{ id: number }>(
+				`SELECT id FROM tags WHERE name = ?`,
+				[tag]
+			);
+
+			const tagId = tagIdResult?.id!;
+
+			// Associate task with tag
+			await db.runAsync(`INSERT INTO task_tags (task_id, tag_id) VALUES (?, ?)`, [
+				taskId,
+				tagId,
+			]);
+		}
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const updateTaskCompletion = async (
+	db: SQLiteDatabase,
+	taskId: number,
+	completed: boolean
+): Promise<void> => {
+	try {
+		await db.runAsync(`UPDATE tasks SET completed = ? WHERE id = ?`, [
+			completed ? 1 : 0,
+			taskId,
+		]);
+	} catch (error) {
+		throw error;
+	}
+};

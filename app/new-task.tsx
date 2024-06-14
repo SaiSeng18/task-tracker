@@ -9,14 +9,32 @@ import {
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Entypo from "@expo/vector-icons/Entypo";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "@/constants/icons";
 import { useRouter } from "expo-router";
+// import { addTask } from "@/utils/db";
+// import { useSQLiteContext } from "expo-sqlite";
+import useTasksStore from "@/utils/store";
 
 const NewTask = () => {
-	const [tags, setTags] = useState<String[]>([]);
+	const [tags, setTags] = useState<string[]>([]);
 	const [tagInput, setTagInput] = useState("");
 	const router = useRouter();
+	const [task, setTask] = useState({
+		title: "",
+		description: "",
+		completed: false,
+		tags,
+	});
+
+	const { addTask } = useTasksStore();
+
+	useEffect(() => {
+		setTask((prevTask) => ({
+			...prevTask,
+			tags: tags, // Update tags in task state
+		}));
+	}, [tags]);
 
 	const addTag = () => {
 		if (!tagInput) return;
@@ -30,9 +48,17 @@ const NewTask = () => {
 		setTags(newTags);
 	};
 
-	const addTask = () => {
-		router.navigate("/task");
+	const handleAddTask = async () => {
+		try {
+			await addTask(task.title, task.description, task.completed, task.tags);
+
+			router.navigate("/task");
+		} catch (error) {
+			throw error;
+		}
 	};
+
+	console.log(task);
 
 	return (
 		<ScrollView
@@ -53,7 +79,10 @@ const NewTask = () => {
 			<View style={{ width: "100%", gap: 20 }}>
 				<View style={{ gap: 10 }}>
 					<Text style={{ fontSize: 18, color: COLORS.light }}>Title</Text>
-					<TextInput style={styles.textInput} />
+					<TextInput
+						style={styles.textInput}
+						onChangeText={(text) => setTask({ ...task, title: text })}
+					/>
 				</View>
 				<View style={{ gap: 10 }}>
 					<Text style={{ fontSize: 18, color: COLORS.light }}>Description</Text>
@@ -61,6 +90,7 @@ const NewTask = () => {
 						style={[styles.textInput, { textAlignVertical: "top" }]}
 						multiline={true}
 						numberOfLines={4}
+						onChangeText={(text) => setTask({ ...task, description: text })}
 					/>
 				</View>
 				<View>
@@ -101,7 +131,7 @@ const NewTask = () => {
 				</View>
 
 				<Pressable
-					onPress={addTask}
+					onPress={handleAddTask}
 					style={{
 						flexDirection: "row",
 						justifyContent: "center",
