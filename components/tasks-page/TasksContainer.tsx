@@ -23,62 +23,63 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import useTasksStore from "@/utils/store";
 
 export const TasksContainer = () => {
-	const tabs = [
-		{ title: "All", value: "all", function: () => fetchAll() },
-		{ title: "Completed", value: "completed", function: () => fetchCompleted() },
-		{
-			title: "In Progress",
-			value: "in progress",
-			function: () => fetchInProgress(),
-		},
-	];
-	const [activeTab, setActiveTab] = useState(tabs[0].value);
-	// const [tasks, setTasks] = useState<Task[]>([]);
-	const { tasks, fetchAll, fetchCompleted, fetchInProgress } = useTasksStore();
-
 	const db = useSQLiteContext();
 
+	const { activeTab, tasks, fetchAll, fetchCompleted, fetchInProgress } =
+		useTasksStore();
+
 	useEffect(() => {
-		fetchAll();
+		fetchAll(db);
 	}, []);
 
-	// const fetchAll = async () => {
-	// 	const data = await getTasks(db);
-	// 	setTasks(data);
-	// 	setActiveTab("all");
-	// };
-
-	// const fetchCompleted = async () => {
-	// 	const data = await getTasksByCompletion(db, true);
-	// 	setTasks(data);
-	// 	setActiveTab("completed");
-	// };
-
-	// const fetchInProgress = async () => {
-	// 	const data = await getTasksByCompletion(db, false);
-	// 	setTasks(data);
-	// 	setActiveTab("in progress");
-	// };
+	console.log(tasks);
 
 	return (
 		<View style={styles.container}>
 			<View style={styles.tabContainer}>
-				{tabs.map((tab) => (
-					<Pressable
-						key={tab.value}
-						style={[
-							styles.tab,
-							{
-								backgroundColor: tab.value === activeTab ? COLORS.light : COLORS.dark,
-							},
-						]}
-						onPress={tab.function}>
-						<Text
-							style={{ color: tab.value === activeTab ? COLORS.dark : COLORS.light }}>
-							{tab.title}
-						</Text>
-					</Pressable>
-				))}
+				<Pressable
+					style={[
+						styles.tab,
+						{
+							backgroundColor: activeTab === "all" ? COLORS.light : COLORS.dark,
+						},
+					]}
+					onPress={() => fetchAll(db)}>
+					<Text style={{ color: activeTab === "all" ? COLORS.dark : COLORS.light }}>
+						All
+					</Text>
+				</Pressable>
+
+				<Pressable
+					style={[
+						styles.tab,
+						{
+							backgroundColor: activeTab === "completed" ? COLORS.light : COLORS.dark,
+						},
+					]}
+					onPress={() => fetchCompleted(db)}>
+					<Text
+						style={{ color: activeTab === "completed" ? COLORS.dark : COLORS.light }}>
+						Completed
+					</Text>
+				</Pressable>
+
+				<Pressable
+					style={[
+						styles.tab,
+						{
+							backgroundColor:
+								activeTab === "in progress" ? COLORS.light : COLORS.dark,
+						},
+					]}
+					onPress={() => fetchInProgress(db)}>
+					<Text
+						style={{
+							color: activeTab === "in progress" ? COLORS.dark : COLORS.light,
+						}}>
+						In Progress
+					</Text>
+				</Pressable>
 			</View>
 
 			{tasks.length === 0 ? (
@@ -113,10 +114,11 @@ const HiddenItem = ({
 }) => {
 	const { animatedStyle } = useScaleAnimation({ delay: 500 });
 	const db = useSQLiteContext();
+	const { handleCompletion } = useTasksStore();
 
 	const handleComplete = async () => {
 		try {
-			await updateTaskCompletion(db, item.id, true);
+			await handleCompletion(db, item.id, true);
 			if (rowMap[item.id]) {
 				rowMap[item.id].closeRow(); // Close the row using the task's id
 			}
