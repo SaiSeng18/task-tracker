@@ -4,10 +4,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 export const WeekView = () => {
 	return (
 		<View
-			style={[
-				CARD_CONTAINER,
-				{ backgroundColor: COLORS.light, marginBottom: 20 },
-			]}>
+			style={[CARD_CONTAINER, { backgroundColor: COLORS.light, marginBottom: 2 }]}>
 			<Text style={{ marginBottom: 16, fontSize: 20 }}>Start of the week</Text>
 			<View style={styles.container}>
 				{Array(7)
