@@ -1,10 +1,26 @@
 import { COLORS } from "@/constants/theme";
 import React, { useEffect, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import { getTasks, getTasksByCompletion } from "@/utils/db";
+import {
+	Pressable,
+	StyleSheet,
+	Text,
+	TouchableHighlight,
+	TouchableOpacity,
+	View,
+} from "react-native";
+import {
+	getTasks,
+	getTasksByCompletion,
+	updateTaskCompletion,
+} from "@/utils/db";
 import { useSQLiteContext } from "expo-sqlite/build";
 import { Task } from "@/utils/db/types";
 import { TaskCard } from "./TaskCard";
+import { RowMap, SwipeListView } from "react-native-swipe-list-view";
+import { useScaleAnimation } from "@/utils/animations";
+import Animated from "react-native-reanimated";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import useTasksStore from "@/utils/store";
 
 export const TasksContainer = () => {
 	const tabs = [
@@ -17,7 +33,8 @@ export const TasksContainer = () => {
 		},
 	];
 	const [activeTab, setActiveTab] = useState(tabs[0].value);
-	const [tasks, setTasks] = useState<Task[]>([]);
+	// const [tasks, setTasks] = useState<Task[]>([]);
+	const { tasks, fetchAll, fetchCompleted, fetchInProgress } = useTasksStore();
 
 	const db = useSQLiteContext();
 
@@ -25,24 +42,23 @@ export const TasksContainer = () => {
 		fetchAll();
 	}, []);
 
-	const fetchAll = async () => {
-		const data = await getTasks(db);
-		setTasks(data);
-		setActiveTab("all");
-	};
+	// const fetchAll = async () => {
+	// 	const data = await getTasks(db);
+	// 	setTasks(data);
+	// 	setActiveTab("all");
+	// };
 
-	const fetchCompleted = async () => {
-		const data = await getTasksByCompletion(db, true);
-		setTasks(data);
-		setActiveTab("completed");
-	};
+	// const fetchCompleted = async () => {
+	// 	const data = await getTasksByCompletion(db, true);
+	// 	setTasks(data);
+	// 	setActiveTab("completed");
+	// };
 
-	const fetchInProgress = async () => {
-		const data = await getTasksByCompletion(db, false);
-		setTasks(data);
-		setActiveTab("in progress");
-	};
-	console.log(tasks);
+	// const fetchInProgress = async () => {
+	// 	const data = await getTasksByCompletion(db, false);
+	// 	setTasks(data);
+	// 	setActiveTab("in progress");
+	// };
 
 	return (
 		<View style={styles.container}>
@@ -65,26 +81,95 @@ export const TasksContainer = () => {
 				))}
 			</View>
 
-			{/* {Array(5)
-				.fill(null)
-				.map((_, index) => (
-					<Task key={index} />
-				))} */}
-			{tasks.length === 0 && (
-				<View
-					style={{
-						height: "100%",
-					}}>
-					<Text style={{ color: COLORS.light, fontSize: 24 }}>No tasks found</Text>
+			{tasks.length === 0 ? (
+				<View style={styles.noTasksContainer}>
+					<Text style={styles.noTasksText}>No tasks found</Text>
+					<Text style={styles.noTasksText}>Complete or Add more task</Text>
 				</View>
+			) : (
+				<SwipeListView
+					data={tasks}
+					keyExtractor={(item, index) => item.id.toString()}
+					ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+					renderItem={({ item, index }) => <TaskCard task={item} index={index} />}
+					renderHiddenItem={(data, rowMap) => (
+						<HiddenItem index={data.index} item={data.item} rowMap={rowMap} />
+					)}
+					rightOpenValue={-200}
+				/>
 			)}
-
-			<FlatList
-				data={tasks}
-				ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
-				renderItem={({ item, index }) => <TaskCard task={item} index={index} />}
-			/>
 		</View>
+	);
+};
+
+const HiddenItem = ({
+	item,
+	index,
+	rowMap,
+}: {
+	item: Task;
+	index: number;
+	rowMap: RowMap<Task>;
+}) => {
+	const { animatedStyle } = useScaleAnimation({ delay: 500 });
+	const db = useSQLiteContext();
+
+	const handleComplete = async () => {
+		try {
+			await updateTaskCompletion(db, item.id, true);
+			if (rowMap[item.id]) {
+				rowMap[item.id].closeRow(); // Close the row using the task's id
+			}
+		} catch (error) {
+			throw error;
+		}
+	};
+
+	return (
+		<TouchableHighlight
+			onPress={handleComplete}
+			style={{
+				flex: 1,
+				width: 180,
+				alignSelf: "flex-end",
+				borderRadius: 20,
+				overflow: "hidden",
+			}}>
+			<Animated.View
+				style={[
+					animatedStyle,
+					{
+						flex: 1,
+						backgroundColor: item.completed ? COLORS.red : COLORS.lime,
+						borderRadius: 20,
+						justifyContent: "center",
+						alignItems: "center",
+					},
+				]}>
+				{item.completed ? (
+					<FontAwesome5
+						name="trash"
+						size={24}
+						color={item.completed ? COLORS.light : COLORS.dark}
+					/>
+				) : (
+					<FontAwesome5
+						name="check"
+						size={24}
+						color={item.completed ? COLORS.light : COLORS.dark}
+					/>
+				)}
+
+				<Text
+					style={{
+						fontSize: 20,
+						textAlign: "center",
+						color: item.completed ? COLORS.light : COLORS.dark,
+					}}>
+					Mark this as complete
+				</Text>
+			</Animated.View>
+		</TouchableHighlight>
 	);
 };
 
@@ -92,13 +177,13 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		height: "100%",
-		paddingHorizontal: 10,
+		paddingHorizontal: 8,
 	},
 	tabContainer: {
 		flexDirection: "row",
 		justifyContent: "space-between",
-		gap: 16,
-		marginBottom: 20,
+		gap: 8,
+		marginBottom: 8,
 	},
 	tab: {
 		flex: 1,
@@ -116,5 +201,16 @@ const styles = StyleSheet.create({
 	},
 	page: {
 		flex: 1,
+	},
+	noTasksContainer: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: COLORS.light,
+		borderRadius: 20,
+	},
+	noTasksText: {
+		color: COLORS.dark,
+		fontSize: 18,
 	},
 });
