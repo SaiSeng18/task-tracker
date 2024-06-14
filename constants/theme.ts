@@ -7,6 +7,8 @@ const COLORS = {
 	lime: "#cfe9bf",
 	lightYellow: "#ffeba8",
 	cyan: "#b8e7ef",
+	red: "#d11a2a",
+	blue: "#3985d0",
 };
 
 const SPACING = {
