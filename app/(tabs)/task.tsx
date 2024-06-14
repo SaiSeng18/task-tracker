@@ -26,7 +26,7 @@ const Tasks = () => {
 						flexDirection: "row",
 						justifyContent: "space-between",
 						alignItems: "center",
-						paddingVertical: 16,
+						paddingVertical: 8,
 					}}>
 					<Icon name="logo" size={50} color={COLORS.light} />
 
@@ -34,7 +34,6 @@ const Tasks = () => {
 						onPress={() => router.push("/new-task")}
 						style={{
 							paddingHorizontal: 10,
-							// paddingVertical: 16,
 							backgroundColor: COLORS.light,
 							flexDirection: "row",
 							alignItems: "center",
@@ -57,7 +56,7 @@ const styles = StyleSheet.create({
 	container: {
 		// height: "100%",
 		padding: SPACING.small,
-		gap: SPACING.small,
+		gap: 8,
 		// backgroundColor: "white",
 	},
 });
