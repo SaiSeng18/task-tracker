@@ -1,50 +1,72 @@
-# Welcome to your Expo app 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+# Task Tracker App
 
-## Get started
+This is a Task Tracker application built using Expo, designed to help you manage your tasks efficiently. It allows you to categorize tasks into different tabs such as all, completed, in progress, and uncompleted. The app is built with React Native and utilizes various libraries and tools to enhance its functionality.
 
-1. Install dependencies
+## Features
+
+- Task categorization
+- Swipe to interact with tasks
+- Responsive design for various device sizes
+
+## Getting Started
+
+To get started with the Task Tracker app, follow these steps:
+
+1. Clone the repository to your local machine.
+2. Install the dependencies:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. Start the app:
 
    ```bash
-    npx expo start
+   npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+You can then open the app in a development build, Android emulator, iOS simulator, or Expo Go.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Dependencies
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+This project uses the following key dependencies:
 
-## Get a fresh project
+- **Expo**: A framework and platform for universal React applications.
+- **React Native**: A framework for building native apps using React.
+- **React Navigation**: Navigation library for React Native applications.
+- **Expo SQLite**: A SQLite database access library for Expo apps.
+- **React Native Swipe List View**: A React Native ListView component with rows that swipe open and closed.
+- **Zustand**: A state management solution for React that uses hooks.
+- **React Native Reanimated**: A library to animate React Native's views.
+- **React Native Vector Icons**: Customizable Icons for React Native with support for NavBar/TabBar, image source, and full styling.
 
-When you're ready, run:
+For a complete list of dependencies, refer to the `package.json` file in the project.
+
+## Development
+
+This project is set up with Expo for easy development and testing across platforms. You can start developing by editing the files inside the `app` directory.
+
+## Reset Project
+
+To reset the project to a fresh state, run:
 
 ```bash
-npm run reset-project
+npm run reset
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+This command will move the starter code to the `app-example` directory and create a blank `app` directory for new development.
 
-## Learn more
+## Learn More
 
-To learn more about developing your project with Expo, look at the following resources:
+To learn more about developing with Expo, check out the following resources:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- [Expo Documentation](https://docs.expo.dev/)
+- [Learn Expo Tutorial](https://docs.expo.dev/get-started/installation/)
 
-## Join the community
+## Join the Community
 
-Join our community of developers creating universal apps.
+Join our community of developers creating universal apps:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- [Expo on GitHub](https://github.com/expo/expo)
+- [Discord Community](https://discord.com/invite/expo)
