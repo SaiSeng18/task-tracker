@@ -1,5 +1,12 @@
 import { Link } from "expo-router";
-import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+import {
+	ActivityIndicator,
+	ScrollView,
+	StatusBar,
+	StyleSheet,
+	Text,
+	View,
+} from "react-native";
 import { COLORS, SPACING } from "@/constants/theme";
 import { Header } from "@/components/home-page/Header";
 import { CurrentTask } from "@/components/home-page/CurrentTask";
@@ -8,8 +15,18 @@ import { CommunityBlog } from "@/components/home-page/CommunityBlog";
 import { Statistic } from "@/components/home-page/Statistic";
 import { SharedStatus } from "@/components/home-page/SharedStatus";
 import { Progress } from "@/components/home-page/Progress";
+import useTasksStore from "@/utils/store";
+import { useEffect } from "react";
+import { useSQLiteContext } from "expo-sqlite";
 
 export default function Page() {
+	const db = useSQLiteContext();
+	const { tasks, fetchAll, loading } = useTasksStore();
+
+	useEffect(() => {
+		fetchAll(db);
+	}, []);
+
 	return (
 		<ScrollView
 			style={{
@@ -17,20 +34,23 @@ export default function Page() {
 			}}>
 			<View style={styles.container}>
 				<Header />
+				{loading ? (
+					<ActivityIndicator size="large" color={COLORS.light} />
+				) : (
+					<>
+						<CurrentTask tasks={tasks} />
 
-				<CurrentTask />
+						<PreviewTask />
 
-				<PreviewTask />
+						<CommunityBlog />
 
-				<CommunityBlog />
+						<Statistic tasks={tasks} />
 
-				<Statistic />
+						<SharedStatus />
 
-				<SharedStatus />
-
-				<Progress />
-
-				<Link href="/tasks">Tasks</Link>
+						<Progress tasks={tasks} />
+					</>
+				)}
 			</View>
 		</ScrollView>
 	);

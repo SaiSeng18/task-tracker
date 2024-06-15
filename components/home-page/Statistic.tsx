@@ -1,13 +1,36 @@
 import { CARD_CONTAINER, COLORS } from "@/constants/theme";
 import { useScaleAnimation } from "@/utils/animations";
+import { Task } from "@/utils/db/types";
 import { Image as ExImage } from "expo-image";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated from "react-native-reanimated";
 import EtIcon from "react-native-vector-icons/Entypo";
 import FeIcon from "react-native-vector-icons/Feather";
 
-export const Statistic = () => {
+export const Statistic = ({ tasks }: { tasks: Task[] }) => {
 	const { animatedStyle } = useScaleAnimation({ delay: 300 });
+	const completedTask = tasks?.filter((task) => task.completed) || [];
+	const completionRate = (completedTask.length / tasks.length) * 100;
+	const scoreMessageColors: Record<string, string> = {
+		"below average": COLORS.red,
+		average: COLORS.lightYellow,
+		"above average": COLORS.cyan,
+		excellent: COLORS.lime,
+	};
+
+	let scoreMessage: string;
+
+	if (completionRate < 30) {
+		scoreMessage = "below average";
+	} else if (completionRate < 50) {
+		scoreMessage = "average";
+	} else if (completionRate < 70) {
+		scoreMessage = "above average";
+	} else {
+		scoreMessage = "excellent";
+	}
+
+	const textColor = scoreMessageColors[scoreMessage];
 
 	return (
 		<Animated.View
@@ -44,8 +67,16 @@ export const Statistic = () => {
 							overflow: "hidden",
 						}}
 					/>{" "}
-					your overall score is{" "}
-					<Text style={{ fontWeight: "700" }}>above average.</Text>
+					{tasks.length === 0 ? (
+						"You have no tasks"
+					) : (
+						<>
+							your overall score is{" "}
+							<Text style={{ fontWeight: "700", color: textColor }}>
+								{scoreMessage}
+							</Text>
+						</>
+					)}
 				</Text>
 			</View>
 
@@ -76,7 +107,9 @@ export const Statistic = () => {
 						alignItems: "center",
 						gap: 8,
 					}}>
-					<Text style={{ fontSize: 10 }}>🏆 Best Result: 5/6 Tasks</Text>
+					<Text style={{ fontSize: 10 }}>
+						🏆 Best Result: {`${completedTask.length}/${tasks.length}`} Tasks
+					</Text>
 				</View>
 
 				<Pressable

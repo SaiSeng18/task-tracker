@@ -4,10 +4,25 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { useState } from "react";
 import { useScaleAnimation } from "@/utils/animations";
 import Animated from "react-native-reanimated";
+import { Task } from "@/utils/db/types";
 
-export const Progress = () => {
+export const Progress = ({ tasks }: { tasks: Task[] }) => {
 	const [time, setTime] = useState<"week" | "month">("week");
 	const { animatedStyle } = useScaleAnimation({ delay: 500 });
+	const completedTask = tasks?.filter((task) => task.completed) || [];
+	const completionRate = Math.floor((completedTask.length / tasks.length) * 100);
+
+	let scoreMessage: string;
+
+	if (completionRate < 30) {
+		scoreMessage = "Try harder 😔";
+	} else if (completionRate < 50) {
+		scoreMessage = "So so 😐";
+	} else if (completionRate < 70) {
+		scoreMessage = "You are doing well 🙂";
+	} else {
+		scoreMessage = "You are doing great 😊";
+	}
 
 	return (
 		<Animated.View
@@ -80,14 +95,19 @@ export const Progress = () => {
 					justifyContent: "flex-end",
 					alignItems: "flex-end",
 				}}>
-				<View style={{ flex: 1 }}>
-					<Text style={{ fontSize: 16 }}>Your progress</Text>
+				{tasks.length === 0 ? (
+					<Text style={{ fontSize: 16 }}>You have no task</Text>
+				) : (
+					<View style={{ flex: 1 }}>
+						<Text style={{ fontSize: 16 }}>Your progress</Text>
 
-					<Text style={{ fontSize: 32 }}>You are doing well 🙂</Text>
-				</View>
+						<Text style={{ fontSize: 32 }}>{scoreMessage}</Text>
+					</View>
+				)}
+
 				<View
 					style={{ flex: 1, alignItems: "flex-end", justifyContent: "flex-end" }}>
-					<Text style={{ fontSize: 62 }}>78%</Text>
+					<Text style={{ fontSize: 62 }}>{ tasks.length === 0 ? "0$":  {`${completionRate}`}}%</Text>
 				</View>
 			</View>
 		</Animated.View>

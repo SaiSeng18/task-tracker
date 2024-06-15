@@ -63,8 +63,6 @@ const NewTask = () => {
 		}
 	};
 
-	console.log(task);
-
 	return (
 		<KeyboardAvoidingView
 			style={{ flex: 1 }}
