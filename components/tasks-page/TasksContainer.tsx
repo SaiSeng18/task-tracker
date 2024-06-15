@@ -1,18 +1,13 @@
 import { COLORS } from "@/constants/theme";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
+	ActivityIndicator,
 	Pressable,
 	StyleSheet,
 	Text,
 	TouchableHighlight,
-	TouchableOpacity,
 	View,
 } from "react-native";
-import {
-	getTasks,
-	getTasksByCompletion,
-	updateTaskCompletion,
-} from "@/utils/db";
 import { useSQLiteContext } from "expo-sqlite/build";
 import { Task } from "@/utils/db/types";
 import { TaskCard } from "./TaskCard";
@@ -25,14 +20,24 @@ import useTasksStore from "@/utils/store";
 export const TasksContainer = () => {
 	const db = useSQLiteContext();
 
-	const { activeTab, tasks, fetchAll, fetchCompleted, fetchInProgress } =
-		useTasksStore();
+	const {
+		loading,
+		activeTab,
+		tasks,
+		fetchAll,
+		fetchCompleted,
+		fetchInProgress,
+	} = useTasksStore();
 
 	useEffect(() => {
 		fetchAll(db);
 	}, []);
 
 	console.log(tasks);
+
+	// if (loading) {
+	// 	return <ActivityIndicator size="large" color={COLORS.light} />;
+	// }
 
 	return (
 		<View style={styles.container}>
@@ -82,7 +87,9 @@ export const TasksContainer = () => {
 				</Pressable>
 			</View>
 
-			{tasks.length === 0 ? (
+			{loading ? (
+				<ActivityIndicator size="large" color={COLORS.light} />
+			) : tasks.length === 0 ? (
 				<View style={styles.noTasksContainer}>
 					<Text style={styles.noTasksText}>No tasks found</Text>
 					<Text style={styles.noTasksText}>Complete or Add more task</Text>
@@ -114,11 +121,24 @@ const HiddenItem = ({
 }) => {
 	const { animatedStyle } = useScaleAnimation({ delay: 500 });
 	const db = useSQLiteContext();
-	const { handleCompletion } = useTasksStore();
+	const { handleCompletion, handleDelete } = useTasksStore();
 
-	const handleComplete = async () => {
+	const completeTask = async () => {
 		try {
-			await handleCompletion(db, item.id, true);
+			!item.completed && (await handleCompletion(db, item.id, true));
+
+			if (rowMap[item.id]) {
+				rowMap[item.id].closeRow(); // Close the row using the task's id
+			}
+		} catch (error) {
+			throw error;
+		}
+	};
+
+	const deleteTask = async () => {
+		try {
+			item.completed && (await handleDelete(db, item.id));
+
 			if (rowMap[item.id]) {
 				rowMap[item.id].closeRow(); // Close the row using the task's id
 			}
@@ -129,7 +149,7 @@ const HiddenItem = ({
 
 	return (
 		<TouchableHighlight
-			onPress={handleComplete}
+			onPress={item.completed ? deleteTask : completeTask}
 			style={{
 				flex: 1,
 				width: 180,
@@ -168,7 +188,7 @@ const HiddenItem = ({
 						textAlign: "center",
 						color: item.completed ? COLORS.light : COLORS.dark,
 					}}>
-					Mark this as complete
+					{item.completed ? "Delete this task" : "Mark this as complete"}
 				</Text>
 			</Animated.View>
 		</TouchableHighlight>
