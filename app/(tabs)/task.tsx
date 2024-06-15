@@ -2,16 +2,12 @@ import { TasksContainer } from "@/components/tasks-page/TasksContainer";
 import { WeekView } from "@/components/tasks-page/WeekView";
 import { Icon } from "@/constants/icons";
 import { COLORS, SPACING } from "@/constants/theme";
-import { getTasks } from "@/utils/db";
-import { Task } from "@/utils/db/types";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import { View, Pressable, Text, StyleSheet } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 
 const Tasks = () => {
 	const router = useRouter();
-	const [tasks, setTasks] = useState<Task[]>();
 
 	return (
 		<View

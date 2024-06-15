@@ -154,3 +154,16 @@ export const updateTaskCompletion = async (
 		throw error;
 	}
 };
+
+export const deleteTask = async (
+	db: SQLiteDatabase,
+	id: number
+): Promise<void> => {
+	try {
+		await db.runAsync(`DELETE FROM tasks WHERE id = ?`, [id]);
+		console.log(`Task with ID ${id} has been deleted successfully.`);
+	} catch (error) {
+		console.error(`Failed to delete task with ID ${id}:`, error);
+		throw error;
+	}
+};
