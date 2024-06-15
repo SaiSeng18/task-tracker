@@ -11,7 +11,10 @@ import { Task } from "@/utils/db/types";
 
 interface TasksStore {
 	tasks: Task[];
+	completedTasks: Task[];
+	uncompletedTasks: Task[];
 	loading: boolean;
+	tabs: string[];
 	activeTab: "all" | "completed" | "in progress";
 	setActiveTab: (tab: "all" | "completed" | "in progress") => void;
 	fetchAll: (db: SQLiteDatabase) => Promise<void>;
@@ -33,7 +36,10 @@ interface TasksStore {
 }
 const useTasksStore = create<TasksStore>((set, get) => ({
 	tasks: [],
+	completedTasks: [],
+	uncompletedTasks: [],
 	loading: false,
+	tabs: ["all", "completed", "in progress"],
 	activeTab: "all",
 	setActiveTab: (tab) => set({ activeTab: tab }),
 	fetchAll: async (db) => {
@@ -45,13 +51,13 @@ const useTasksStore = create<TasksStore>((set, get) => ({
 	fetchCompleted: async (db) => {
 		set({ loading: true });
 		const data = await getTasksByCompletion(db, true);
-		set({ tasks: data, loading: false });
+		set({ completedTasks: data, loading: false });
 		set({ activeTab: "completed" });
 	},
 	fetchInProgress: async (db) => {
 		set({ loading: true });
 		const data = await getTasksByCompletion(db, false);
-		set({ tasks: data, loading: false });
+		set({ uncompletedTasks: data, loading: false });
 		set({ activeTab: "in progress" });
 	},
 	addTask: async (db, title, description, completed, tags) => {

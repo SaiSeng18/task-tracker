@@ -107,7 +107,9 @@ export const Progress = ({ tasks }: { tasks: Task[] }) => {
 
 				<View
 					style={{ flex: 1, alignItems: "flex-end", justifyContent: "flex-end" }}>
-					<Text style={{ fontSize: 62 }}>{ tasks.length === 0 ? "0$":  {`${completionRate}`}}%</Text>
+					<Text style={{ fontSize: 62 }}>
+						{tasks.length === 0 ? "0$" : `${completionRate}%`}%
+					</Text>
 				</View>
 			</View>
 		</Animated.View>
