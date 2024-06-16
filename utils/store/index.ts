@@ -5,6 +5,8 @@ import {
 	addTask as addTaskToDB,
 	updateTaskCompletion,
 	deleteTask,
+	updateTaskById,
+	getTaskById,
 } from "@/utils/db";
 import { SQLiteDatabase } from "expo-sqlite/build";
 import { Task } from "@/utils/db/types";
@@ -20,12 +22,18 @@ interface TasksStore {
 	fetchAll: (db: SQLiteDatabase) => Promise<void>;
 	fetchCompleted: (db: SQLiteDatabase) => Promise<void>;
 	fetchInProgress: (db: SQLiteDatabase) => Promise<void>;
+	fetchTaskById: (db: SQLiteDatabase, id: number) => Promise<Task | null>;
 	addTask: (
 		db: SQLiteDatabase,
 		title: string,
 		description: string,
 		completed: boolean,
 		tags: string[]
+	) => Promise<void>;
+	updateTask: (
+		db: SQLiteDatabase,
+		id: number,
+		task: Partial<Task>
 	) => Promise<void>;
 	handleCompletion: (
 		db: SQLiteDatabase,
@@ -60,8 +68,16 @@ const useTasksStore = create<TasksStore>((set, get) => ({
 		set({ uncompletedTasks: data, loading: false });
 		set({ activeTab: "in progress" });
 	},
+	fetchTaskById: async (db, id) => {
+		const task = await getTaskById(db, id);
+		return task;
+	},
 	addTask: async (db, title, description, completed, tags) => {
 		await addTaskToDB(db, title, description, completed, tags);
+		get().fetchAll(db);
+	},
+	updateTask: async (db, id, task) => {
+		await updateTaskById(db, id, task);
 		get().fetchAll(db);
 	},
 	handleCompletion: async (db, id, completed) => {

@@ -7,7 +7,7 @@ const Layout = () => {
 		<Tabs
 			screenOptions={{
 				headerShown: false,
-
+				tabBarShowLabel: false,
 				tabBarStyle: [
 					{
 						backgroundColor: COLORS.dark,
@@ -24,8 +24,6 @@ const Layout = () => {
 			<Tabs.Screen
 				name="index"
 				options={{
-					tabBarLabel: "",
-
 					tabBarIcon: ({ focused }) => (
 						<CustomTab focused={focused} isIcon={false} text="Home" />
 					),
@@ -34,24 +32,19 @@ const Layout = () => {
 			<Tabs.Screen
 				name="task"
 				options={{
-					tabBarLabel: "",
 					tabBarIcon: ({ focused }) => <CustomTab focused={focused} isIcon={true} />,
 				}}
 			/>
 			<Tabs.Screen
-				name="setting"
+				name="blog"
 				options={{
-					tabBarLabel: "",
-					tabBarIcon: ({ focused }) => (
-						<CustomTab focused={focused} text="Setting" />
-					),
+					tabBarIcon: ({ focused }) => <CustomTab focused={focused} text="Blog" />,
 				}}
 			/>
 			<Tabs.Screen
 				name="profile"
 				options={{
-					tabBarLabel: "",
-					tabBarIcon: ({ color, focused }) => (
+					tabBarIcon: ({ focused }) => (
 						<CustomTab focused={focused} text="Profile" />
 					),
 				}}

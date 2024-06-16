@@ -82,6 +82,100 @@ export const getTasks = async (db: SQLiteDatabase): Promise<Task[]> => {
 
 	return sortedTasks;
 };
+
+export const getTaskById = async (
+	db: SQLiteDatabase,
+	id: number
+): Promise<Task | null> => {
+	try {
+		const task = await db.getFirstAsync<Task>(
+			`SELECT t.*, GROUP_CONCAT(tags.name) AS tags
+            FROM tasks t
+            LEFT JOIN task_tags ON t.id = task_tags.task_id
+            LEFT JOIN tags ON task_tags.tag_id = tags.id
+            WHERE t.id = ?`,
+			[id]
+		);
+
+		return task ?? null; // Return null if task is not found
+	} catch (error) {
+		console.error(`Failed to get task with ID ${id}:`, error);
+		throw error;
+	}
+};
+
+export const updateTaskById = async (
+	db: SQLiteDatabase,
+	id: number,
+	updatedTask: Partial<Task>
+): Promise<void> => {
+	const { title, description, completed, tags } = updatedTask;
+
+	console.log(`Updating task with ID ${id}:`, updatedTask);
+
+	try {
+		// Update the main task properties
+		if (
+			title !== undefined &&
+			description !== undefined &&
+			completed !== undefined
+		) {
+			const updateResult = await db.runAsync(
+				`UPDATE tasks SET
+                title = COALESCE(?, title),
+                description = COALESCE(?, description),
+                completed = COALESCE(?, completed)
+            	WHERE id = ?`,
+				[title, description, completed ? 1 : 0, id]
+			);
+
+			console.log(`Task update result:`, updateResult);
+
+			// If tags are provided, update the task_tags table
+			if (tags) {
+				// Remove existing tags for the task
+				const deleteResult = await db.runAsync(
+					`DELETE FROM task_tags WHERE task_id = ?`,
+					[id]
+				);
+				console.log(`Deleted existing tags result:`, deleteResult);
+
+				// Add new tags
+				for (const tag of tags) {
+					// Insert tag if not exists
+					const insertTagResult = await db.runAsync(
+						`INSERT OR IGNORE INTO tags (name) VALUES (?)`,
+						[tag]
+					);
+					console.log(`Insert tag result for "${tag}":`, insertTagResult);
+
+					// Get the tag ID
+					const tagIdResult = await db.getFirstAsync<{ id: number }>(
+						`SELECT id FROM tags WHERE name = ?`,
+						[tag]
+					);
+
+					const tagId = tagIdResult?.id;
+
+					// Associate task with tag
+					if (tagId) {
+						const insertTaskTagResult = await db.runAsync(
+							`INSERT INTO task_tags (task_id, tag_id) VALUES (?, ?)`,
+							[id, tagId]
+						);
+						console.log(`Associate task with tag result:`, insertTaskTagResult);
+					} else {
+						console.error(`Failed to retrieve tag ID for tag "${tag}"`);
+					}
+				}
+			}
+		}
+	} catch (error) {
+		console.error(`Failed to update task with ID ${id}:`, error);
+		throw error;
+	}
+};
+
 export const getTasksByCompletion = async (
 	db: SQLiteDatabase,
 	complete: boolean

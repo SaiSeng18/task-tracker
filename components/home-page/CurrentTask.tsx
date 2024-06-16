@@ -1,14 +1,17 @@
 import { CARD_CONTAINER, COLORS } from "@/constants/theme";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import EtIcon from "react-native-vector-icons/Entypo";
+import FeIcon from "react-native-vector-icons/Feather";
 import Animated from "react-native-reanimated";
 
 import { useScaleAnimation } from "@/utils/animations";
 import { Task } from "@/utils/db/types";
+import { useRouter } from "expo-router";
 
 export const CurrentTask = ({ tasks }: { tasks: Task[] }) => {
 	const { animatedStyle } = useScaleAnimation({ delay: 0 });
 	const uncompletedTask = tasks?.filter((task) => !task.completed) || [];
+	const router = useRouter();
 
 	return (
 		<Animated.View
@@ -24,10 +27,13 @@ export const CurrentTask = ({ tasks }: { tasks: Task[] }) => {
 				<Text>Calendar</Text>
 				<View style={{ flexDirection: "row", gap: 8 }}>
 					<Pressable
+						onPress={() => router.navigate("task")}
 						style={[styles.iconButton, { backgroundColor: "rgba(255,255,255,.3)" }]}>
-						<EtIcon name="share" size={15} color={COLORS.dark} />
+						<FeIcon name="arrow-up-right" size={15} color={COLORS.dark} />
 					</Pressable>
-					<Pressable style={[styles.iconButton, { backgroundColor: COLORS.dark }]}>
+					<Pressable
+						onPress={() => router.navigate("new-task")}
+						style={[styles.iconButton, { backgroundColor: COLORS.dark }]}>
 						<EtIcon name="plus" size={15} color={COLORS.light} />
 					</Pressable>
 				</View>

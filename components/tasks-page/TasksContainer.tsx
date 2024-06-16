@@ -114,6 +114,7 @@ export const TasksContainer = () => {
 						<HiddenItem index={data.index} item={data.item} rowMap={rowMap} />
 					)}
 					rightOpenValue={-200}
+					disableRightSwipe
 				/>
 			)}
 		</View>

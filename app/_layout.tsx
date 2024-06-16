@@ -26,6 +26,10 @@ const RootLayout = () => {
 						name="new-task"
 						options={{ headerShown: false, presentation: "modal" }}
 					/>
+					<Stack.Screen
+						name="edit-task/[id]"
+						options={{ headerShown: false, presentation: "modal" }}
+					/>
 
 					{/* <Stack.Screen name="+not-found" /> */}
 				</Stack>

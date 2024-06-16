@@ -4,9 +4,11 @@ import { Entypo } from "@expo/vector-icons";
 import { Task } from "@/utils/db/types";
 import { useScaleAnimation } from "@/utils/animations";
 import Animated from "react-native-reanimated";
+import { useRouter } from "expo-router";
 
 export const TaskCard = ({ task, index }: { task: Task; index: number }) => {
 	const { animatedStyle } = useScaleAnimation({ delay: 100 * index });
+	const router = useRouter();
 
 	return (
 		<Animated.View
@@ -19,11 +21,9 @@ export const TaskCard = ({ task, index }: { task: Task; index: number }) => {
 				<Text>Calendar</Text>
 				<View style={{ flexDirection: "row", gap: 8 }}>
 					<Pressable
-						style={[styles.iconButton, { backgroundColor: "rgba(255,255,255,.3)" }]}>
-						<Entypo name="share" size={15} color={COLORS.dark} />
-					</Pressable>
-					<Pressable style={[styles.iconButton, { backgroundColor: COLORS.dark }]}>
-						<Entypo name="plus" size={15} color={COLORS.light} />
+						onPress={() => router.navigate(`/edit-task/${task.id}`)}
+						style={[styles.iconButton, { backgroundColor: COLORS.dark }]}>
+						<Entypo name="pencil" size={15} color={COLORS.light} />
 					</Pressable>
 				</View>
 			</View>
