@@ -5,32 +5,26 @@ import {
 	Pressable,
 	StyleSheet,
 	Text,
-	TouchableHighlight,
 	View,
 } from "react-native";
 import { useSQLiteContext } from "expo-sqlite/build";
 import { Task } from "@/utils/db/types";
 import { TaskCard } from "./TaskCard";
-import { RowMap, SwipeListView } from "react-native-swipe-list-view";
-import { useScaleAnimation } from "@/utils/animations";
-import Animated from "react-native-reanimated";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { SwipeListView } from "react-native-swipe-list-view";
 import useTasksStore from "@/utils/store";
 import HiddenItem from "./HiddenItem";
 
 export const TasksContainer = () => {
 	const db = useSQLiteContext();
 
-	const {
-		loading,
-		activeTab,
-		tasks,
-		completedTasks,
-		uncompletedTasks,
-		fetchAll,
-		fetchCompleted,
-		fetchInProgress,
-	} = useTasksStore();
+	const loading = useTasksStore((state) => state.loading);
+	const activeTab = useTasksStore((state) => state.activeTab);
+	const tasks = useTasksStore((state) => state.tasks);
+	const completedTasks = useTasksStore((state) => state.completedTasks);
+	const uncompletedTasks = useTasksStore((state) => state.uncompletedTasks);
+	const fetchAll = useTasksStore((state) => state.fetchAll);
+	const fetchCompleted = useTasksStore((state) => state.fetchCompleted);
+	const fetchInProgress = useTasksStore((state) => state.fetchInProgress);
 
 	useEffect(() => {
 		fetchAll(db);

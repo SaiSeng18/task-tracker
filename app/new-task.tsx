@@ -30,7 +30,7 @@ const NewTask = () => {
 		tags,
 	});
 
-	const { addTask } = useTasksStore();
+	const addTask = useTasksStore((state) => state.addTask);
 
 	useEffect(() => {
 		setTask((prevTask) => ({

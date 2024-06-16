@@ -21,7 +21,9 @@ import { useSQLiteContext } from "expo-sqlite";
 
 export default function Page() {
 	const db = useSQLiteContext();
-	const { tasks, fetchAll, loading } = useTasksStore();
+	const tasks = useTasksStore((state) => state.tasks);
+	const fetchAll = useTasksStore((state) => state.fetchAll);
+	const loading = useTasksStore((state) => state.loading);
 
 	useEffect(() => {
 		fetchAll(db);

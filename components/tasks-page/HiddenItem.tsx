@@ -18,7 +18,8 @@ const HiddenItem = ({
 }) => {
 	const { animatedStyle } = useScaleAnimation({ delay: 500 });
 	const db = useSQLiteContext();
-	const { handleCompletion, handleDelete } = useTasksStore();
+	const handleCompletion = useTasksStore((state) => state.handleCompletion);
+	const handleDelete = useTasksStore((state) => state.handleDelete);
 
 	const completeTask = async () => {
 		try {
