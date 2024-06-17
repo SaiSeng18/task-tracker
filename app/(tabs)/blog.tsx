@@ -14,7 +14,7 @@ const Blog = () => {
 				contentContainerStyle={styles.list}
 				ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
 				data={data}
-				renderItem={() => <BlogCard />}
+				renderItem={({ index }) => <BlogCard index={index} />}
 			/>
 		</View>
 	);
@@ -25,10 +25,11 @@ export default Blog;
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: SPACING.small,
+
 		backgroundColor: COLORS.dark,
 	},
 	list: {
 		flexGrow: 1,
+		padding: SPACING.small,
 	},
 });

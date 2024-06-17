@@ -8,8 +8,8 @@ import FaIcon from "react-native-vector-icons/FontAwesome";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated from "react-native-reanimated";
 
-const BlogCard = () => {
-	const { animatedStyle } = useScaleAnimation({ delay: 200 });
+const BlogCard = ({ index }: { index: number }) => {
+	const { animatedStyle } = useScaleAnimation({ delay: index * 200 });
 
 	return (
 		<Animated.View style={[styles.container, animatedStyle]}>
