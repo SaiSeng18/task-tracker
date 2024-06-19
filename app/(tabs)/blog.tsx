@@ -9,7 +9,10 @@ const Blog = () => {
 
 	return (
 		<View style={styles.container}>
-			<Header />
+			<View style={{ width: "100%", padding: 8 }}>
+				<Header />
+			</View>
+
 			<FlatList
 				contentContainerStyle={styles.list}
 				ItemSeparatorComponent={() => <View style={{ height: 10 }} />}

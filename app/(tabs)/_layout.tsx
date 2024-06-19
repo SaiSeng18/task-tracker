@@ -1,8 +1,11 @@
 import CustomTab from "@/components/CustomTab";
 import { COLORS } from "@/constants/theme";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
+import { useState } from "react";
 
 const Layout = () => {
+	const [authenticated, setAuthenticated] = useState(false);
+
 	return (
 		<Tabs
 			screenOptions={{
